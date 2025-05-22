@@ -1,13 +1,25 @@
+
 import React, { useState } from 'react';
+import ForgotPassword from './ForgotPassword';
 
 const SignIn = ({ onBack, onSignUp }) => {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert('Sign In (mock)');
   };
+
+  if (showForgotPassword) {
+    return (
+      <ForgotPassword
+        onBack={() => setShowForgotPassword(false)}
+        onComplete={() => setShowForgotPassword(false)}
+      />
+    );
+  }
 
   return (
     <div style={styles.container}>
@@ -31,7 +43,14 @@ const SignIn = ({ onBack, onSignUp }) => {
           required
         />
         <div style={styles.forgotPassword}>
-          <a href="#" onClick={(e) => e.preventDefault()} style={styles.link}>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowForgotPassword(true);
+            }}
+            style={styles.link}
+          >
             Forgot password?
           </a>
         </div>
@@ -56,6 +75,7 @@ const SignIn = ({ onBack, onSignUp }) => {
     </div>
   );
 };
+
 
 const styles = {
   container: {
