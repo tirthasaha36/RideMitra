@@ -4,7 +4,7 @@ const LocationPermission = ({ onUseLocation, onSkip }) => {
   return (
     <div style={styles.container}>
       <img
-        src="https://maps.googleapis.com/maps/api/staticmap?center=Jaipur,India&zoom=12&size=600x400&key=YOUR_API_KEY"
+        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
         alt="Map background"
         style={styles.mapBackground}
       />
