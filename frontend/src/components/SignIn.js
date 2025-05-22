@@ -79,6 +79,8 @@ const styles = {
     padding: 10,
     marginBottom: 15,
     fontSize: 16,
+    borderRadius: 30,
+    border: '1px solid #ccc',
   },
   forgotPassword: {
     textAlign: 'right',
@@ -97,6 +99,7 @@ const styles = {
     fontSize: 18,
     cursor: 'pointer',
     marginBottom: 15,
+    borderRadius: 30,
   },
   or: {
     textAlign: 'center',
