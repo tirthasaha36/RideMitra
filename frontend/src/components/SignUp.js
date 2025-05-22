@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 const SignUp = ({ onBack, onSignIn }) => {
   const [step, setStep] = useState(1);
@@ -12,6 +12,9 @@ const SignUp = ({ onBack, onSignIn }) => {
     confirmPassword: '',
   });
 
+  // Create refs for each OTP input
+  const otpRefs = useRef([]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -22,6 +25,11 @@ const SignUp = ({ onBack, onSignIn }) => {
     const newOtp = [...formData.otp];
     newOtp[index] = value;
     setFormData((prev) => ({ ...prev, otp: newOtp }));
+
+    // Auto focus next input if value is entered and not last input
+    if (value && index < otpRefs.current.length - 1) {
+      otpRefs.current[index + 1].focus();
+    }
   };
 
   const handleNext = () => {
@@ -103,16 +111,31 @@ const SignUp = ({ onBack, onSignIn }) => {
           <h2 style={styles.title}>Phone verification</h2>
           <p>Enter your OTP code</p>
           <div style={styles.otpContainer}>
-            {formData.otp.map((digit, idx) => (
-              <input
-                key={idx}
-                type="text"
-                maxLength="1"
-                value={digit}
-                onChange={(e) => handleOtpChange(idx, e.target.value)}
-                style={styles.otpInput}
-              />
-            ))}
+{formData.otp.map((digit, idx) => (
+  <input
+    key={idx}
+    type="tel"
+    inputMode="numeric"
+    pattern="[0-9]*"
+    maxLength="1"
+    value={digit}
+    onChange={(e) => {
+      const val = e.target.value;
+      if (/^\d*$/.test(val)) {
+        handleOtpChange(idx, val);
+      }
+    }}
+    onKeyDown={(e) => {
+      if (e.key === 'Backspace' && !formData.otp[idx]) {
+        if (idx > 0) {
+          otpRefs.current[idx - 1].focus();
+        }
+      }
+    }}
+    style={styles.otpInput}
+    ref={(el) => (otpRefs.current[idx] = el)}
+  />
+))}
           </div>
           <p>
             Didn't receive code?{' '}
