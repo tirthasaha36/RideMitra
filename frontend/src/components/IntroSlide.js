@@ -1,4 +1,5 @@
 import React from 'react';
+import NextButton2 from '../assets/images/NextButton2.png';
 
 const IntroSlide = ({ title, description, imageUrl, onNext, onSkip, isLast }) => {
   return (
@@ -10,11 +11,12 @@ const IntroSlide = ({ title, description, imageUrl, onNext, onSkip, isLast }) =>
       <h2 style={styles.title}>{title}</h2>
       <p style={styles.description}>{description}</p>
       <button style={styles.nextButton} onClick={onNext} aria-label={isLast ? 'Go' : 'Next'}>
-        {isLast ? 'Go' : '→'}
+        {isLast ? 'Go' : <img src={NextButton2} alt="Next Button" style={{width: 36, height: 36}} />}
       </button>
     </div>
   );
 };
+
 
 const styles = {
   container: {
@@ -62,6 +64,9 @@ const styles = {
     color: '#fff',
     border: 'none',
     cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 };
 
