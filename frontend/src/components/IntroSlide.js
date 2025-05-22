@@ -29,7 +29,7 @@ const styles = {
     position: 'relative',
     textAlign: 'center',
     boxSizing: 'border-box',
-    marginTop: 30,
+    marginTop: 80,
   },
   skip: {
     position: 'absolute',
