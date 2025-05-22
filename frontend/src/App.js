@@ -7,24 +7,28 @@ import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Profile from './components/Profile';
 
+import IntroImage1 from './assets/images/IntroImage1.png';
+import IntroImage2 from './assets/images/IntroImage2.png';
+import IntroImage3 from './assets/images/IntroImage3.png';
+
 const slides = [
   {
     key: 'slide1',
     title: 'Anywhere you are',
-    description: 'Sell houses easily with the help of Listenoryx and to make this line big I am writing more.',
-    imageUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // placeholder image URL
+    description: 'Wherever life takes you, we’ll drive.',
+    imageUrl: IntroImage1,
   },
   {
     key: 'slide2',
     title: 'At anytime',
-    description: 'Sell houses easily with the help of Listenoryx and to make this line big I am writing more.',
-    imageUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // placeholder image URL
+    description: 'Late night? Early flight? We’ve got you.',
+    imageUrl: IntroImage2,
   },
   {
     key: 'slide3',
     title: 'Book your car',
-    description: 'Sell houses easily with the help of Listenoryx and to make this line big I am writing more.',
-    imageUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // placeholder image URL
+    description: "Tap, book, and ride - it's that simple.",
+    imageUrl: IntroImage3,
   },
 ];
 
