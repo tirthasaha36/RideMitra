@@ -39,11 +39,17 @@ const SignIn = ({ onBack, onSignUp }) => {
       </form>
       <p style={styles.or}>or</p>
       <div style={styles.socialButtons}>
-        <button style={styles.socialButton}>G</button>
-        <button style={styles.socialButton}>F</button>
-        <button style={styles.socialButton}>O</button>
+        <button style={styles.socialButton}>
+          <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google" style={styles.socialIcon} />
+        </button>
+        <button style={styles.socialButton}>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_(2019).png" alt="Facebook" style={styles.socialIcon} />
+        </button>
+        <button style={styles.socialButton}>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" style={{...styles.socialIcon, objectFit: 'contain'}} />
+        </button>
       </div>
-      <p>
+      <p style={styles.centeredText}>
         Don't have an account?{' '}
         <span style={styles.link} onClick={onSignUp}>Sign Up</span>
       </p>
@@ -107,18 +113,28 @@ const styles = {
   },
   socialButtons: {
     display: 'flex',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    gap: 10,
     marginBottom: 15,
   },
   socialButton: {
     backgroundColor: '#eee',
     border: 'none',
-    padding: 10,
-    fontSize: 18,
+    padding: 5,
     cursor: 'pointer',
     width: 50,
     height: 50,
     borderRadius: 25,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  socialIcon: {
+    width: 24,
+    height: 24,
+  },
+  centeredText: {
+    textAlign: 'center',
   },
 };
 
