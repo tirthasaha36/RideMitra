@@ -2,14 +2,17 @@
 import React, { useState } from 'react';
 import ForgotPassword from './ForgotPassword';
 
-const SignIn = ({ onBack, onSignUp }) => {
+const SignIn = ({ onBack, onSignUp, onLoginSuccess }) => {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Sign In (mock)');
+    // Call onLoginSuccess prop to notify successful login
+    if (typeof onLoginSuccess === 'function') {
+      onLoginSuccess();
+    }
   };
 
   if (showForgotPassword) {

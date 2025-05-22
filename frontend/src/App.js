@@ -6,6 +6,8 @@ import WelcomePage from './components/WelcomePage';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Profile from './components/Profile';
+import PostLoginPage from './components/PostLoginPage';
+import BookingPage from './components/BookingPage';
 
 import IntroImage1 from './assets/images/IntroImage1.png';
 import IntroImage2 from './assets/images/IntroImage2.png';
@@ -75,20 +77,36 @@ function App() {
   };
 
   const handleProfileBack = () => {
-    setCurrentStep(slides.length + 4); // Back to SignIn
+    setCurrentStep(slides.length + 5); // Back to PostLoginPage
+  };
+
+  const handleLoginSuccess = () => {
+    setCurrentStep(slides.length + 5); // Move to PostLoginPage after successful login
+  };
+
+  const handlePostLoginRedirect = () => {
+    setCurrentStep(slides.length + 6); // Move to BookingPage after PostLoginPage
+  };
+
+  const handleBookingBack = () => {
+    setCurrentStep(slides.length + 5); // Back to PostLoginPage
   };
 
   if (currentStep === 0) {
     return <SplashScreen onNext={handleNext} />;
   }
 
-  if (currentStep > slides.length + 5) {
+  if (currentStep > slides.length + 6) {
     return (
       <div style={{ padding: 20, textAlign: 'center' }}>
         <h2>End of flow</h2>
         <p>Implement further navigation as needed.</p>
       </div>
     );
+  }
+
+  if (currentStep === slides.length + 6) {
+    return <BookingPage onBack={handleBookingBack} />;
   }
 
   if (currentStep >= 1 && currentStep <= slides.length) {
@@ -118,11 +136,15 @@ function App() {
   }
 
   if (currentStep === slides.length + 4) {
-    return <SignIn onBack={handleSignInBack} onSignUp={() => setCurrentStep(slides.length + 3)} />;
+    return <SignIn onBack={handleSignInBack} onSignUp={() => setCurrentStep(slides.length + 3)} onLoginSuccess={handleLoginSuccess} />;
   }
 
   if (currentStep === slides.length + 5) {
-    return <Profile onBack={handleProfileBack} />;
+    return <PostLoginPage onRedirect={handlePostLoginRedirect} />;
+  }
+
+  if (currentStep === slides.length + 6) {
+    return <BookingPage onBack={handleBookingBack} />;
   }
 
   return null;
