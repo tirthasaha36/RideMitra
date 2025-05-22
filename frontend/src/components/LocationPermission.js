@@ -41,6 +41,9 @@ const styles = {
     height: '100vh',
     width: '100%',
     overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   mapBackground: {
     position: 'absolute',
@@ -51,10 +54,6 @@ const styles = {
     zIndex: 0,
   },
   modal: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 30,
@@ -63,6 +62,7 @@ const styles = {
     textAlign: 'center',
     zIndex: 1,
     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    marginTop: -150,
   },
   iconWrapper: {
     marginBottom: 20,
