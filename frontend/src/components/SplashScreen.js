@@ -34,7 +34,7 @@ const styles = {
   },
   logoContainer: {
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 100,
   },
   logoCircle: {
     backgroundColor: 'white',
@@ -61,7 +61,7 @@ const styles = {
   },
   nextButton: {
     position: 'absolute',
-    bottom: 150,
+    bottom: 250,
     backgroundColor: 'white',
     borderRadius: '50%',
     width: 50,

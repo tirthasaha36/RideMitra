@@ -25,6 +25,8 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
+    boxSizing: 'border-box',
+    marginTop: 30,
   },
   title: {
     fontSize: 32,
