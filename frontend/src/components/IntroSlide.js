@@ -28,6 +28,8 @@ const styles = {
     alignItems: 'center',
     position: 'relative',
     textAlign: 'center',
+    boxSizing: 'border-box',
+    marginTop: 30,
   },
   skip: {
     position: 'absolute',
