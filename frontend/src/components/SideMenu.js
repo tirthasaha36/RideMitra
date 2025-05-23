@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const menuItems = [
   { id: 1, label: 'Electric', icon: '⚡' },
@@ -16,13 +16,39 @@ const menuItems = [
 ];
 
 const SideMenu = ({ onClose }) => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger slide-in animation on mount
+    setVisible(true);
+  }, []);
+
+  const handleClose = () => {
+    // Trigger slide-out animation
+    setVisible(false);
+    // Wait for animation to finish before calling onClose
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
   return (
-    <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.menu} onClick={e => e.stopPropagation()}>
+    <div style={styles.overlay} onClick={handleClose}>
+      <div
+        style={{
+          ...styles.menu,
+          transform: visible ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 300ms ease-in-out',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
         <div style={styles.profileSection}>
           <div style={styles.profileIcon}>👤</div>
           <div style={styles.profileLabel}>My Profile {'>'}</div>
         </div>
+        <button style={styles.closeButton} onClick={handleClose} aria-label="Close menu">
+          &times;
+        </button>
         <div style={styles.menuItems}>
           {menuItems.map(item => (
             <div key={item.id} style={styles.menuItem}>
@@ -64,6 +90,17 @@ const styles = {
     boxSizing: 'border-box',
     boxShadow: '2px 0 8px rgba(0,0,0,0.2)',
     overflowY: 'auto',
+    position: 'relative',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    fontSize: 24,
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#333',
   },
   profileSection: {
     display: 'flex',
