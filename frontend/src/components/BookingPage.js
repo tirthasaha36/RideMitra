@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, LoadScript, Marker, Autocomplete, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import SideMenu from './SideMenu';
 
 const containerStyle = {
   width: '100vw',
@@ -24,10 +25,12 @@ const center = {
 
 const rideOptions = [
   { id: 1, name: 'Book Any', description: 'Mini, Prime Sedan, Prime Plus', eta: '4 min', fareRange: '₹457 - ₹528', redeem: 11 },
+  { id: 6, name: 'Bike', description: 'Fast and economical bike rides', eta: '2 min', fareRange: '₹200 - ₹250' },
   { id: 2, name: 'Auto', description: 'Quickest auto ride in town', eta: '1 min', fareRange: '₹390 - ₹399' },
+  { id: 5, name: 'Mini', description: 'Comfy, economical cars', eta: '5 min', fareRange: '₹457' },
   { id: 3, name: 'Prime Plus', description: 'Ride in utmost comfort', eta: '4 min', fareRange: '₹528' },
   { id: 4, name: 'Prime Sedan', description: 'Top sedans', eta: '5 min', fareRange: '₹502' },
-  { id: 5, name: 'Mini', description: 'Comfy, economical cars', eta: '5 min', fareRange: '₹457' },
+  { id: 7, name: 'Prime SUV', description: 'Extra large SUVs for groups', eta: '6 min', fareRange: '₹700 - ₹850' },
 ];
 
 const paymentOptions = [
@@ -60,6 +63,9 @@ const BookingPage = ({ onBack }) => {
   const [directions, setDirections] = useState(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [mapCenter, setMapCenter] = useState(center);
+  const [selectedRideId, setSelectedRideId] = useState(1); // default to 'Book Any'
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  const [showSideMenu, setShowSideMenu] = useState(false);
 
   const pickupRef = useRef(null);
 
@@ -72,6 +78,14 @@ const BookingPage = ({ onBack }) => {
       setMapCenter({ lat: pickup.lat, lng: pickup.lng });
     }
   }, [pickup]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const onLoadPickup = (autocomplete) => {
     pickupRef.current = autocomplete;
@@ -123,7 +137,7 @@ const BookingPage = ({ onBack }) => {
         {scriptLoaded && (
           <>
             <div style={styles.topBarContainer}>
-              <button style={styles.menuButton} aria-label="Menu">
+              <button style={styles.menuButton} aria-label="Menu" onClick={() => setShowSideMenu(true)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="35"
@@ -186,7 +200,16 @@ const BookingPage = ({ onBack }) => {
 
             <div style={styles.rideOptionsContainer}>
               {rideOptions.map((ride) => (
-                <div key={ride.id} style={styles.rideOption}>
+                <div
+                  key={ride.id}
+                  style={{
+                    ...styles.rideOption,
+                    backgroundColor: selectedRideId === ride.id ? '#FFF3CD' : 'transparent',
+                    borderRadius: selectedRideId === ride.id ? 5 : 0,
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setSelectedRideId(ride.id)}
+                >
                   <div style={styles.rideOptionLeft}>
                     <div style={styles.rideEta}>{ride.eta}</div>
                     <div style={styles.rideName}>{ride.name}</div>
@@ -198,7 +221,13 @@ const BookingPage = ({ onBack }) => {
             </div>
 
             <div style={styles.bottomBar}>
-              <div style={styles.paymentOptions}>
+              <div
+                className="payment-options"
+                style={{
+                  ...styles.paymentOptions,
+                  gap: isMobile ? 6 : styles.paymentOptions.gap,
+                }}
+              >
                 {paymentOptions.map((option) => (
                   <div key={option.id} style={styles.paymentOption}>
                     <span style={styles.paymentIcon}>{option.icon}</span>
@@ -206,13 +235,21 @@ const BookingPage = ({ onBack }) => {
                   </div>
                 ))}
               </div>
-              <button style={styles.bookButton} onClick={handleBookRide}>
-                Book Any
+              <button
+                style={{
+                  ...styles.bookButton,
+                  padding: styles.bookButton.padding,
+                  width: styles.bookButton.width,
+                }}
+                onClick={handleBookRide}
+              >
+                {selectedRideId === 1 ? 'Book Any' : `Book ${rideOptions.find(r => r.id === selectedRideId)?.name}`}
               </button>
             </div>
           </>
         )}
       </LoadScript>
+      {showSideMenu && <SideMenu onClose={() => setShowSideMenu(false)} />}
     </>
   );
 };
@@ -401,14 +438,26 @@ const styles = {
   bookButton: {
     backgroundColor: '#FFC107',
     color: 'white',
-    padding: '12px 30px',
+    padding: '12px 15px',
     borderRadius: 30,
     border: 'none',
     fontSize: 16,
     fontWeight: 'bold',
     cursor: 'pointer',
     fontFamily: 'Arial, sans-serif',
+    width: 260,
+    textAlign: 'center',
+    boxSizing: 'border-box',
+    whiteSpace: 'normal',
   },
 };
+
+const styleSheet = `
+  @media (max-width: 600px) {
+    .payment-options {
+      gap: 6px !important;
+    }
+  }
+`;
 
 export default BookingPage;
