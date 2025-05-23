@@ -3,9 +3,18 @@ import { GoogleMap, LoadScript, Marker, Autocomplete, DirectionsService, Directi
 
 const containerStyle = {
   width: '100vw',
-  height: '60vh',
+  height: 'calc(100vh - 80px)',  // Adjust height to fill below top bar container (approx 80px height)
   position: 'relative',
   zIndex: 1,
+};
+
+const mapContainer = {
+  position: 'fixed',
+  top: 80,
+  left: 0,
+  right: 0,
+  bottom: 70,
+  zIndex: 10,
 };
 
 const center = {
@@ -45,6 +54,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
 const BookingPage = ({ onBack }) => {
   const [pickup, setPickup] = useState(null);
+  const [inputValue, setInputValue] = useState('');
   const [distance, setDistance] = useState(null);
   const [fare, setFare] = useState(null);
   const [directions, setDirections] = useState(null);
@@ -57,6 +67,7 @@ const BookingPage = ({ onBack }) => {
       setDistance(null);
       setFare(null);
       setDirections(null);
+      setInputValue(pickup.address);
     }
   }, [pickup]);
 
@@ -73,6 +84,7 @@ const BookingPage = ({ onBack }) => {
           lng: place.geometry.location.lng(),
           address: place.formatted_address,
         });
+        setInputValue(place.formatted_address);
       }
     }
   };
@@ -108,42 +120,66 @@ const BookingPage = ({ onBack }) => {
       >
         {scriptLoaded && (
           <>
-            <div style={styles.topBar}>
-              <button onClick={onBack} style={styles.backButton}>&larr;</button>
-              <button style={styles.menuButton}>
-                <div style={styles.menuLine}></div>
-                <div style={styles.menuLine}></div>
-                <div style={styles.menuLine}></div>
+            <div style={styles.topBarContainer}>
+              <button style={styles.menuButton} aria-label="Menu">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="35"
+                  height="25"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
               </button>
+              <div style={styles.pickupInputContainer}>
+                <Autocomplete onLoad={onLoadPickup} onPlaceChanged={onPlaceChangedPickup}>
+                  <input
+                    type="text"
+                    placeholder="Enter pickup location"
+                    style={styles.pickupInputWithClear}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                </Autocomplete>
+                {inputValue && (
+                  <button
+                    style={styles.clearButton}
+                    onClick={() => {
+                      setInputValue('');
+                      setPickup(null);
+                    }}
+                    aria-label="Clear pickup location"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
             </div>
 
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={center}
-              zoom={12}
-              options={{
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: false,
-                zoomControl: false,
-                keyboardShortcuts: false,
-                disableDefaultUI: true,
-              }}
-            >
-              {pickup && <Marker position={{ lat: pickup.lat, lng: pickup.lng }} />}
-            </GoogleMap>
-
-            <div style={styles.pickupContainer}>
-              <label style={styles.label}>Your location</label>
-              <Autocomplete onLoad={onLoadPickup} onPlaceChanged={onPlaceChangedPickup}>
-                <input
-                  type="text"
-                  placeholder="Enter pickup location"
-                  style={styles.pickupInput}
-                  value={pickup ? pickup.address : ''}
-                  readOnly
-                />
-              </Autocomplete>
+            <div style={styles.mapContainer}>
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={12}
+                options={{
+                  mapTypeControl: false,
+                  streetViewControl: false,
+                  fullscreenControl: false,
+                  zoomControl: false,
+                  keyboardShortcuts: false,
+                  disableDefaultUI: true,
+                }}
+              >
+                {pickup && <Marker position={{ lat: pickup.lat, lng: pickup.lng }} />}
+              </GoogleMap>
             </div>
 
             <div style={styles.rideOptionsContainer}>
@@ -197,6 +233,24 @@ const styles = {
     padding: '0 15px',
     zIndex: 20,
   },
+  topBarContainer: {
+    position: 'fixed',
+    top: 10,
+    left: 15,
+    right: 15,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 10,
+    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    zIndex: 25,
+  },
+  pickupInputContainer: {
+    flex: 1,
+    position: 'relative',
+  },
   backButton: {
     fontSize: 24,
     background: 'none',
@@ -240,6 +294,29 @@ const styles = {
     fontSize: 16,
     borderRadius: 6,
     border: '1px solid #ccc',
+  },
+  pickupInputWithClear: {
+    width: '100%',
+    padding: '10px 30px 10px 12px', /* extra right padding for clear button */
+    fontSize: 16,
+    borderRadius: 6,
+    border: '1px solid #ccc',
+  },
+  inputWrapper: {
+    position: 'relative',
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 8,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'transparent',
+    border: 'none',
+    fontSize: 20,
+    cursor: 'pointer',
+    color: '#999',
+    padding: 0,
+    lineHeight: 1,
   },
   rideOptionsContainer: {
     position: 'fixed',
