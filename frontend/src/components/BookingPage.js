@@ -59,6 +59,7 @@ const BookingPage = ({ onBack }) => {
   const [fare, setFare] = useState(null);
   const [directions, setDirections] = useState(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [mapCenter, setMapCenter] = useState(center);
 
   const pickupRef = useRef(null);
 
@@ -68,6 +69,7 @@ const BookingPage = ({ onBack }) => {
       setFare(null);
       setDirections(null);
       setInputValue(pickup.address);
+      setMapCenter({ lat: pickup.lat, lng: pickup.lng });
     }
   }, [pickup]);
 
@@ -167,7 +169,7 @@ const BookingPage = ({ onBack }) => {
             <div style={styles.mapContainer}>
               <GoogleMap
                 mapContainerStyle={containerStyle}
-                center={center}
+                center={mapCenter}
                 zoom={12}
                 options={{
                   mapTypeControl: false,
