@@ -183,16 +183,12 @@ const BookingPage = ({ onBack }) => {
             </div>
 
             <div style={styles.rideOptionsContainer}>
-              <div style={styles.rideOptionsHeader}>
-                <span>Get up to 25 OlaCoins with this booking</span>
-              </div>
               {rideOptions.map((ride) => (
                 <div key={ride.id} style={styles.rideOption}>
                   <div style={styles.rideOptionLeft}>
                     <div style={styles.rideEta}>{ride.eta}</div>
                     <div style={styles.rideName}>{ride.name}</div>
                     <div style={styles.rideDescription}>{ride.description}</div>
-                    {ride.redeem && <div style={styles.rideRedeem}>Redeem {ride.redeem}</div>}
                   </div>
                   <div style={styles.rideFare}>{ride.fareRange}</div>
                 </div>
@@ -299,8 +295,9 @@ const styles = {
     width: '100%',
     padding: '10px 30px 10px 12px', /* extra right padding for clear button */
     fontSize: 16,
-    borderRadius: 6,
+    borderRadius: 30,
     border: '1px solid #ccc',
+    fontFamily: 'Arial, sans-serif',
   },
   inputWrapper: {
     position: 'relative',
@@ -328,11 +325,15 @@ const styles = {
     padding: 15,
     overflowY: 'auto',
     zIndex: 15,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   },
   rideOptionsHeader: {
     marginBottom: 10,
     fontWeight: 'bold',
-    color: '#555',
+    color: '#333',
   },
   rideOption: {
     display: 'flex',
@@ -346,15 +347,16 @@ const styles = {
   },
   rideEta: {
     fontSize: 12,
-    color: '#999',
+    color: '#666',
   },
   rideName: {
     fontWeight: 'bold',
     fontSize: 16,
+    color: '#333',
   },
   rideDescription: {
     fontSize: 12,
-    color: '#777',
+    color: '#666',
   },
   rideRedeem: {
     marginTop: 4,
@@ -395,14 +397,15 @@ const styles = {
     fontSize: 18,
   },
   bookButton: {
-    backgroundColor: '#000',
+    backgroundColor: '#FFC107',
     color: 'white',
     padding: '12px 30px',
-    borderRadius: 6,
+    borderRadius: 30,
     border: 'none',
     fontSize: 16,
     fontWeight: 'bold',
     cursor: 'pointer',
+    fontFamily: 'Arial, sans-serif',
   },
 };
 
