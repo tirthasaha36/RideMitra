@@ -71,6 +71,38 @@ const BookingPage = ({ onBack }) => {
 
   const pickupRef = useRef(null);
   const dropRef = useRef(null);
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (pickup) {
+      setDistance(null);
+      setFare(null);
+      setDirections(null);
+      setInputValue(pickup.address);
+      setMapCenter({ lat: pickup.lat, lng: pickup.lng });
+    }
+  }, [pickup]);
+
+  useEffect(() => {
+    if (pickup && dropLocation && mapRef.current) {
+      const bounds = new window.google.maps.LatLngBounds();
+      bounds.extend(new window.google.maps.LatLng(pickup.lat, pickup.lng));
+      bounds.extend(new window.google.maps.LatLng(dropLocation.lat, dropLocation.lng));
+      mapRef.current.fitBounds(bounds);
+    }
+  }, [pickup, dropLocation]);
+
+  const onLoadMap = (map) => {
+    mapRef.current = map;
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (pickup) {
@@ -233,12 +265,33 @@ const BookingPage = ({ onBack }) => {
                   mapTypeControl: false,
                   streetViewControl: false,
                   fullscreenControl: false,
-                  zoomControl: false,
-                  keyboardShortcuts: false,
-                  disableDefaultUI: true,
+                  zoomControl: true,
+                  keyboardShortcuts: true,
+                  disableDefaultUI: false,
+                  draggable: true,
                 }}
+                onLoad={onLoadMap}
               >
                 {pickup && <Marker position={{ lat: pickup.lat, lng: pickup.lng }} />}
+                {dropLocation && <Marker position={{ lat: dropLocation.lat, lng: dropLocation.lng }} />}
+                {pickup && dropLocation && (
+                  <DirectionsService
+                    options={{
+                      origin: { lat: pickup.lat, lng: pickup.lng },
+                      destination: { lat: dropLocation.lat, lng: dropLocation.lng },
+                      travelMode: 'DRIVING',
+                    }}
+                    callback={directionsCallback}
+                  />
+                )}
+                {directions && (
+                  <DirectionsRenderer
+                    options={{
+                      directions: directions,
+                      preserveViewport: true,
+                    }}
+                  />
+                )}
               </GoogleMap>
             </div>
 
