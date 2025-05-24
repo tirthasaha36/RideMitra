@@ -58,6 +58,8 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 const BookingPage = ({ onBack }) => {
   const [pickup, setPickup] = useState(null);
   const [inputValue, setInputValue] = useState('');
+  const [dropLocation, setDropLocation] = useState(null);
+  const [dropInputValue, setDropInputValue] = useState('');
   const [distance, setDistance] = useState(null);
   const [fare, setFare] = useState(null);
   const [directions, setDirections] = useState(null);
@@ -68,6 +70,7 @@ const BookingPage = ({ onBack }) => {
   const [showSideMenu, setShowSideMenu] = useState(false);
 
   const pickupRef = useRef(null);
+  const dropRef = useRef(null);
 
   useEffect(() => {
     if (pickup) {
@@ -101,6 +104,24 @@ const BookingPage = ({ onBack }) => {
           address: place.formatted_address,
         });
         setInputValue(place.formatted_address);
+      }
+    }
+  };
+
+  const onLoadDrop = (autocomplete) => {
+    dropRef.current = autocomplete;
+  };
+
+  const onPlaceChangedDrop = () => {
+    if (dropRef.current !== null) {
+      const place = dropRef.current.getPlace();
+      if (place.geometry) {
+        setDropLocation({
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+          address: place.formatted_address,
+        });
+        setDropInputValue(place.formatted_address);
       }
     }
   };
@@ -167,12 +188,35 @@ const BookingPage = ({ onBack }) => {
                 </Autocomplete>
                 {inputValue && (
                   <button
-                    style={styles.clearButton}
+                    style={{ ...styles.clearButton, right: 10 }}
                     onClick={() => {
                       setInputValue('');
                       setPickup(null);
                     }}
                     aria-label="Clear pickup location"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
+              <div style={{ ...styles.pickupContainer, marginTop: 20 }}>
+                <Autocomplete onLoad={onLoadDrop} onPlaceChanged={onPlaceChangedDrop}>
+                  <input
+                    type="text"
+                    placeholder="Enter drop location"
+                    style={styles.pickupInputWithClear}
+                    value={dropInputValue}
+                    onChange={(e) => setDropInputValue(e.target.value)}
+                  />
+                </Autocomplete>
+                {dropInputValue && (
+                  <button
+                    style={{ ...styles.clearButton, right: 20 }}
+                    onClick={() => {
+                      setDropInputValue('');
+                      setDropLocation(null);
+                    }}
+                    aria-label="Clear drop location"
                   >
                     &times;
                   </button>
@@ -274,7 +318,7 @@ const styles = {
     left: 15,
     right: 15,
     backgroundColor: 'white',
-    borderRadius: 8,
+    borderRadius: 30,
     padding: 10,
     boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
     display: 'flex',
@@ -285,6 +329,7 @@ const styles = {
   pickupInputContainer: {
     flex: 1,
     position: 'relative',
+    borderRadius: 30,
   },
   backButton: {
     fontSize: 24,
@@ -313,7 +358,7 @@ const styles = {
     left: 15,
     right: 15,
     backgroundColor: 'white',
-    borderRadius: 8,
+    borderRadius: 30,
     padding: 10,
     boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
     zIndex: 15,
@@ -337,6 +382,17 @@ const styles = {
     borderRadius: 30,
     border: '1px solid #ccc',
     fontFamily: 'Arial, sans-serif',
+  },
+  pickupContainer: {
+    position: 'fixed',
+    top: 60,
+    left: 15,
+    right: 15,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 10,
+    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+    zIndex: 15,
   },
   inputWrapper: {
     position: 'relative',
