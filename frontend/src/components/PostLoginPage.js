@@ -5,7 +5,7 @@ const PostLoginPage = ({ onRedirect }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onRedirect();
-    }, 3000); // Redirect after 3 seconds
+    }, 1000); // Redirect after 1 seconds
 
     return () => clearTimeout(timer);
   }, [onRedirect]);
