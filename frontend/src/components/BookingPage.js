@@ -325,33 +325,51 @@ const BookingPage = ({ onBack }) => {
               </GoogleMap>
             </div>
 
-            <div style={styles.rideOptionsContainer}>
-              {rideOptions.map((ride) => (
-                <div
-                  key={ride.id}
-                  style={{
-                    ...styles.rideOption,
-                    backgroundColor: selectedRideId === ride.id ? '#FFF3CD' : 'transparent',
-                    borderRadius: selectedRideId === ride.id ? 5 : 0,
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setSelectedRideId(ride.id)}
-                >
-                  <div style={styles.rideOptionLeft}>
-                    <div style={styles.rideEta}>{ride.eta}</div>
-                    <div style={styles.rideName}>{ride.name}</div>
-                    <div style={styles.rideDescription}>{ride.description}</div>
+            <>
+              <button
+                style={styles.myLocationButton}
+                onClick={() => {
+                  // Dummy handler for now
+                }}
+                aria-label="Use my current location"
+                title="Use my current location"
+              >
+                <img
+                  src="https://img.icons8.com/?size=100&id=60991&format=png&color=000000"
+                  alt="My Location"
+                  width="24"
+                  height="24"
+                  style={{ display: 'block', margin: 'auto' }}
+                />
+              </button>
+              <div style={styles.rideOptionsContainer}>
+                {rideOptions.map((ride) => (
+                  <div
+                    key={ride.id}
+                    style={{
+                      ...styles.rideOption,
+                      backgroundColor: selectedRideId === ride.id ? '#FFF3CD' : 'transparent',
+                      borderRadius: selectedRideId === ride.id ? 5 : 0,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => setSelectedRideId(ride.id)}
+                  >
+                    <div style={styles.rideOptionLeft}>
+                      <div style={styles.rideEta}>{ride.eta}</div>
+                      <div style={styles.rideName}>{ride.name}</div>
+                      <div style={styles.rideDescription}>{ride.description}</div>
+                    </div>
+                    <div style={styles.rideFare}>
+                      {ride.id === 1
+                        ? rideFares[1] || '₹--'
+                        : rideFares[ride.id]
+                          ? `₹${rideFares[ride.id]}`
+                          : '₹--'}
+                    </div>
                   </div>
-                  <div style={styles.rideFare}>
-                    {ride.id === 1
-                      ? rideFares[1] || '₹--'
-                      : rideFares[ride.id]
-                        ? `₹${rideFares[ride.id]}`
-                        : '₹--'}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
 
             <div style={styles.bottomBar}>
               <div
@@ -594,6 +612,22 @@ const styles = {
     textAlign: 'center',
     boxSizing: 'border-box',
     whiteSpace: 'normal',
+  },
+  myLocationButton: {
+    position: 'absolute',
+    top: 500,
+    right: 15,
+    backgroundColor: 'white',
+    borderRadius: '50%',
+    width: 48,
+    height: 48,
+    border: '1px solid #ccc',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+    zIndex: 200,
   },
 };
 
