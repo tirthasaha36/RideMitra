@@ -24,13 +24,13 @@ const center = {
 };
 
 const rideOptions = [
-  { id: 1, name: 'Book Any', description: 'Mini, Prime Sedan, Prime Plus', eta: '4 min', fareRange: '₹457 - ₹528', redeem: 11 },
-  { id: 6, name: 'Bike', description: 'Fast and economical bike rides', eta: '2 min', fareRange: '₹200 - ₹250' },
-  { id: 2, name: 'Auto', description: 'Quickest auto ride in town', eta: '1 min', fareRange: '₹390 - ₹399' },
-  { id: 5, name: 'Mini', description: 'Comfy, economical cars', eta: '5 min', fareRange: '₹457' },
-  { id: 3, name: 'Prime Plus', description: 'Ride in utmost comfort', eta: '4 min', fareRange: '₹528' },
-  { id: 4, name: 'Prime Sedan', description: 'Top sedans', eta: '5 min', fareRange: '₹502' },
-  { id: 7, name: 'Prime SUV', description: 'Extra large SUVs for groups', eta: '6 min', fareRange: '₹700 - ₹850' },
+  { id: 1, name: 'Book Any', description: 'Mini, Prime Sedan, Prime Plus', eta: '4 min', baseFare: 400, perKmRate: 20, redeem: 11 },
+  { id: 6, name: 'Bike', description: 'Fast and economical bike rides', eta: '2 min', baseFare: 100, perKmRate: 10 },
+  { id: 2, name: 'Auto', description: 'Quickest auto ride in town', eta: '1 min', baseFare: 150, perKmRate: 15 },
+  { id: 5, name: 'Mini', description: 'Comfy, economical cars', eta: '5 min', baseFare: 200, perKmRate: 18 },
+  { id: 3, name: 'Prime Plus', description: 'Ride in utmost comfort', eta: '4 min', baseFare: 250, perKmRate: 22 },
+  { id: 4, name: 'Prime Sedan', description: 'Top sedans', eta: '5 min', baseFare: 230, perKmRate: 20 },
+  { id: 7, name: 'Prime SUV', description: 'Extra large SUVs for groups', eta: '6 min', baseFare: 300, perKmRate: 25 },
 ];
 
 const paymentOptions = [
@@ -61,7 +61,7 @@ const BookingPage = ({ onBack }) => {
   const [dropLocation, setDropLocation] = useState(null);
   const [dropInputValue, setDropInputValue] = useState('');
   const [distance, setDistance] = useState(null);
-  const [fare, setFare] = useState(null);
+  const [rideFares, setRideFares] = useState({});
   const [directions, setDirections] = useState(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [mapCenter, setMapCenter] = useState(center);
@@ -74,9 +74,36 @@ const BookingPage = ({ onBack }) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
+    if (pickup && dropLocation) {
+      const dist = calculateDistance(pickup.lat, pickup.lng, dropLocation.lat, dropLocation.lng);
+      setDistance(dist);
+
+      // Calculate fares for each ride option
+      const fares = {};
+      rideOptions.forEach((ride) => {
+        const fare = ride.baseFare + dist * ride.perKmRate;
+        fares[ride.id] = Math.round(fare);
+      });
+
+      // Calculate range for 'Book Any' from Mini to Prime Plus
+      const miniRide = rideOptions.find(r => r.name === 'Mini');
+      const primePlusRide = rideOptions.find(r => r.name === 'Prime Plus');
+      if (miniRide && primePlusRide) {
+        const miniFare = Math.round(miniRide.baseFare + dist * miniRide.perKmRate);
+        const primePlusFare = Math.round(primePlusRide.baseFare + dist * primePlusRide.perKmRate);
+        fares[1] = `₹${miniFare} - ₹${primePlusFare}`;
+      }
+
+      setRideFares(fares);
+    } else {
+      setDistance(null);
+      setRideFares({});
+    }
+  }, [pickup, dropLocation]);
+  
+  useEffect(() => {
     if (pickup) {
       setDistance(null);
-      setFare(null);
       setDirections(null);
       setInputValue(pickup.address);
       setMapCenter({ lat: pickup.lat, lng: pickup.lng });
@@ -107,7 +134,6 @@ const BookingPage = ({ onBack }) => {
   useEffect(() => {
     if (pickup) {
       setDistance(null);
-      setFare(null);
       setDirections(null);
       setInputValue(pickup.address);
       setMapCenter({ lat: pickup.lat, lng: pickup.lng });
@@ -129,13 +155,15 @@ const BookingPage = ({ onBack }) => {
   const onPlaceChangedPickup = () => {
     if (pickupRef.current !== null) {
       const place = pickupRef.current.getPlace();
-      if (place.geometry) {
+      if (place && place.geometry && place.geometry.location) {
         setPickup({
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
-          address: place.formatted_address,
+          address: place.formatted_address || '',
         });
-        setInputValue(place.formatted_address);
+        setInputValue(place.formatted_address || '');
+      } else {
+        console.error('Selected place has no geometry or location');
       }
     }
   };
@@ -147,13 +175,15 @@ const BookingPage = ({ onBack }) => {
   const onPlaceChangedDrop = () => {
     if (dropRef.current !== null) {
       const place = dropRef.current.getPlace();
-      if (place.geometry) {
+      if (place && place.geometry && place.geometry.location) {
         setDropLocation({
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
-          address: place.formatted_address,
+          address: place.formatted_address || '',
         });
-        setDropInputValue(place.formatted_address);
+        setDropInputValue(place.formatted_address || '');
+      } else {
+        console.error('Selected drop place has no geometry or location');
       }
     }
   };
@@ -312,7 +342,13 @@ const BookingPage = ({ onBack }) => {
                     <div style={styles.rideName}>{ride.name}</div>
                     <div style={styles.rideDescription}>{ride.description}</div>
                   </div>
-                  <div style={styles.rideFare}>{ride.fareRange}</div>
+                  <div style={styles.rideFare}>
+                    {ride.id === 1
+                      ? rideFares[1] || '₹--'
+                      : rideFares[ride.id]
+                        ? `₹${rideFares[ride.id]}`
+                        : '₹--'}
+                  </div>
                 </div>
               ))}
             </div>
