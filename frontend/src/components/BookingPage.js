@@ -327,7 +327,7 @@ const BookingPage = ({ onBack }) => {
 
             <>
               <button
-                style={styles.myLocationButton}
+                style={{ ...styles.myLocationButton, top: isMobile ? 500 : 380 }}
                 onClick={() => {
                   // Dummy handler for now
                 }}
