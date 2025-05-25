@@ -7,7 +7,6 @@ import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Profile from './components/Profile';
 import PostLoginPage from './components/PostLoginPage';
-import BookingPage from './components/BookingPage';
 import BookingPage2 from './components/BookingPage2';
 
 import IntroImage1 from './assets/images/IntroImage1.png';
@@ -89,10 +88,6 @@ function App() {
     setCurrentStep(slides.length + 7); // Move to BookingPage2 after PostLoginPage
   };
 
-  const handleBookingBack = () => {
-    setCurrentStep(slides.length + 5); // Back to PostLoginPage
-  };
-
   if (currentStep === 0) {
     return <SplashScreen onNext={handleNext} />;
   }
@@ -108,10 +103,6 @@ function App() {
         <p>Implement further navigation as needed.</p>
       </div>
     );
-  }
-
-  if (currentStep === slides.length + 6) {
-    return <BookingPage onBack={handleBookingBack} />;
   }
 
   if (currentStep >= 1 && currentStep <= slides.length) {
@@ -146,10 +137,6 @@ function App() {
 
   if (currentStep === slides.length + 5) {
     return <PostLoginPage onRedirect={handlePostLoginRedirect} />;
-  }
-
-  if (currentStep === slides.length + 6) {
-    return <BookingPage onBack={handleBookingBack} />;
   }
 
   return null;

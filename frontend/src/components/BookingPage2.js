@@ -54,31 +54,24 @@ const BookingPage2 = () => {
 
   // Initialize map and geocoders
   useEffect(() => {
-    if (mapRef.current) return; // initialize map only once
-
-    // Check container size for debugging
-    if (mapContainerRef.current) {
-      const rect = mapContainerRef.current.getBoundingClientRect();
-      console.log('Map container size:', rect.width, rect.height);
+    if (!mapContainerRef.current) {
+      console.error('Map container ref is null');
+      return;
+    }
+    if (mapRef.current) {
+      return; // initialize map only once
     }
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [78.9629, 20.5937], // India center
+      center: [78.9629, 20.5937],
       zoom: 4,
     });
 
-    mapRef.current.on('styledata', () => {
-      console.log('Map style loaded');
+    mapRef.current.on('load', () => {
+      mapRef.current.resize();
     });
-
-    mapRef.current.on('error', (e) => {
-      console.error('Mapbox error:', e.error ? e.error.message : e);
-    });
-
-    // Add navigation control (zoom buttons)
-    mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Initialize pickup geocoder
     pickupGeocoderRef.current = new MapboxGeocoder({
@@ -86,8 +79,17 @@ const BookingPage2 = () => {
       placeholder: 'Enter pickup location',
       mapboxgl: mapboxgl,
       marker: false,
+      collapsed: false, // ensure suggestions dropdown is shown
+      zoom: 14, // zoom level when selecting a location
+      flyTo: true, // fly to location on selection
     });
-    document.getElementById('pickup-geocoder').appendChild(pickupGeocoderRef.current.onAdd(mapRef.current));
+    const pickupGeocoderContainer = document.getElementById('pickup-geocoder');
+    if (pickupGeocoderContainer) {
+      while (pickupGeocoderContainer.firstChild) {
+        pickupGeocoderContainer.removeChild(pickupGeocoderContainer.firstChild);
+      }
+      pickupGeocoderContainer.appendChild(pickupGeocoderRef.current.onAdd(mapRef.current));
+    }
     pickupGeocoderRef.current.on('result', (e) => {
       const coords = e.result.center;
       setPickup({ lat: coords[1], lng: coords[0], address: e.result.place_name });
@@ -99,24 +101,70 @@ const BookingPage2 = () => {
       placeholder: 'Enter drop location',
       mapboxgl: mapboxgl,
       marker: false,
+      collapsed: false, // ensure suggestions dropdown is shown
+      zoom: 14, // zoom level when selecting a location
+      flyTo: true, // fly to location on selection
     });
-    document.getElementById('drop-geocoder').appendChild(dropGeocoderRef.current.onAdd(mapRef.current));
+    const dropGeocoderContainer = document.getElementById('drop-geocoder');
+    if (dropGeocoderContainer) {
+      while (dropGeocoderContainer.firstChild) {
+        dropGeocoderContainer.removeChild(dropGeocoderContainer.firstChild);
+      }
+      dropGeocoderContainer.appendChild(dropGeocoderRef.current.onAdd(mapRef.current));
+    }
     dropGeocoderRef.current.on('result', (e) => {
       const coords = e.result.center;
       setDropLocation({ lat: coords[1], lng: coords[0], address: e.result.place_name });
     });
 
+    // Apply inline styles to geocoder input boxes after they are rendered
+    setTimeout(() => {
+      const pickupInput = document.querySelector('#pickup-geocoder input.mapboxgl-ctrl-geocoder--input');
+      if (pickupInput) {
+        pickupInput.style.borderRadius = '30px';
+        pickupInput.style.padding = '12px 40px 12px 40px'; // increased left and right padding to avoid overlap with search icon
+        pickupInput.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        pickupInput.style.width = '100%';
+        pickupInput.style.fontSize = '16px';
+        pickupInput.style.outline = 'none';
+        pickupInput.style.border = '1px solid #ddd';
+        pickupInput.style.boxSizing = 'border-box';
+        const pickupParent = pickupInput.closest('.mapboxgl-ctrl-geocoder.mapboxgl-ctrl');
+        if (pickupParent) {
+          pickupParent.style.borderRadius = '30px';
+          pickupParent.style.overflow = 'hidden';
+        }
+      }
+      const dropInput = document.querySelector('#drop-geocoder input.mapboxgl-ctrl-geocoder--input');
+      if (dropInput) {
+        dropInput.style.borderRadius = '30px';
+        dropInput.style.padding = '12px 40px 12px 40px'; // increased left and right padding to avoid overlap with search icon
+        dropInput.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        dropInput.style.width = '100%';
+        dropInput.style.fontSize = '16px';
+        dropInput.style.outline = 'none';
+        dropInput.style.border = '1px solid #ddd';
+        dropInput.style.boxSizing = 'border-box';
+        const dropParent = dropInput.closest('.mapboxgl-ctrl-geocoder.mapboxgl-ctrl');
+        if (dropParent) {
+          dropParent.style.borderRadius = '30px';
+          dropParent.style.overflow = 'hidden';
+        }
+      }
+    }, 100);
+
     return () => {
-      if (mapRef.current) mapRef.current.remove();
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
     };
   }, []);
 
   // Update markers and route when pickup or drop changes
   useEffect(() => {
     if (!mapRef.current || !(mapRef.current.isStyleLoaded && mapRef.current.isStyleLoaded())) return;
-    if (!(mapRef.current.getLayer && mapRef.current.getSource)) return;
 
-    // Remove existing markers and route layers
     if (mapRef.current.getLayer('route')) {
       mapRef.current.removeLayer('route');
     }
@@ -144,23 +192,19 @@ const BookingPage2 = () => {
     }
 
     if (pickup && dropLocation) {
-      // Fit map bounds to markers
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend([pickup.lng, pickup.lat]);
       bounds.extend([dropLocation.lng, dropLocation.lat]);
       mapRef.current.fitBounds(bounds, { padding: 50 });
 
-      // Calculate distance
       const dist = calculateDistance(pickup.lat, pickup.lng, dropLocation.lat, dropLocation.lng);
       setDistance(dist);
 
-      // Calculate fares
       const fares = {};
       rideOptions.forEach((ride) => {
         const fare = ride.baseFare + dist * ride.perKmRate;
         fares[ride.id] = Math.round(fare);
       });
-      // Calculate range for 'Book Any'
       const miniRide = rideOptions.find(r => r.name === 'Mini');
       const primePlusRide = rideOptions.find(r => r.name === 'Prime Plus');
       if (miniRide && primePlusRide) {
@@ -170,7 +214,6 @@ const BookingPage2 = () => {
       }
       setRideFares(fares);
 
-      // Fetch and display route using Mapbox Directions API
       const directionsRequest = `https://api.mapbox.com/directions/v5/mapbox/driving/${pickup.lng},${pickup.lat};${dropLocation.lng},${dropLocation.lat}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
       fetch(directionsRequest)
         .then(res => res.json())
@@ -220,30 +263,38 @@ const BookingPage2 = () => {
 
   return (
     <>
-      <div style={styles.topBarContainer}>
-        <button style={styles.menuButton} aria-label="Menu" onClick={() => setShowSideMenu(true)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="35"
-            height="25"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
-        <div id="pickup-geocoder" style={styles.geocoderContainer}></div>
-        <div id="drop-geocoder" style={styles.geocoderContainer}></div>
+      <div ref={mapContainerRef} style={styles.mapContainer} />
+
+      <div className="topBarContainer" style={styles.topBarContainer}>
+        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: '100%' }}>
+          <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingRight: 10 }}>
+            <button className="menuButton" aria-label="Menu" onClick={() => setShowSideMenu(true)}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="35"
+                height="25"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', zIndex: 1000 }}>
+            <div id="pickup-geocoder" className="geocoderContainer" style={{ width: '100%' }}></div>
+          <div id="drop-geocoder" className="geocoderContainer dropGeocoderSeparate" style={{ marginTop: 6, width: '100%' }}></div>
+          </div>
+        </div>
       </div>
 
-      <div ref={mapContainerRef} style={styles.mapContainer} />
+      {/* Removed separate dropContainer div */}
 
       <div style={styles.rideOptionsContainer}>
         {rideOptions.map((ride) => (
@@ -295,29 +346,96 @@ const BookingPage2 = () => {
 const styles = {
   topBarContainer: {
     position: 'fixed',
-    top: 10,
-    left: 15,
-    right: 15,
-    backgroundColor: 'white',
-    borderRadius: 30,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 120,
+    minHeight: 120,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
     padding: 10,
     boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    zIndex: 25,
+    zIndex: 30,
+    flexDirection: 'row', // horizontal layout
+    pointerEvents: 'auto',
   },
   geocoderContainer: {
-    flex: 1,
-    minWidth: 0,
+    position: 'relative',
+    height: '50px',
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    padding: '8px 12px',
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius: 30,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  menuPickupContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  dropGeocoderSeparate: {
+    position: 'relative',
+    height: '50px',
+    backgroundColor: 'white',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+    padding: '8px 12px',
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius: 30,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  dropContainer: {
+    position: 'fixed',
+    top: 70,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: 'transparent',
+    zIndex: 25,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  '@media (max-width: 600px)': {
+    topBarContainer: {
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      padding: 10,
+      gap: 10,
+    },
+    geocoderContainer: {
+      width: '100%',
+      borderRadius: 30,
+      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+      padding: '8px 12px',
+      backgroundColor: 'white',
+    },
+    menuButton: {
+      alignSelf: 'flex-start',
+      marginBottom: 10,
+    },
   },
   mapContainer: {
     position: 'fixed',
-    top: 80,
+    top: 0,
     left: 0,
     right: 0,
     bottom: 70,
-    zIndex: 10,
+    zIndex: 5, 
+    height: 'calc(100vh - 70px)',
   },
   rideOptionsContainer: {
     position: 'fixed',
