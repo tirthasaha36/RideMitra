@@ -8,6 +8,7 @@ import SignIn from './components/SignIn';
 import Profile from './components/Profile';
 import PostLoginPage from './components/PostLoginPage';
 import BookingPage from './components/BookingPage';
+import BookingPage2 from './components/BookingPage2';
 
 import IntroImage1 from './assets/images/IntroImage1.png';
 import IntroImage2 from './assets/images/IntroImage2.png';
@@ -85,7 +86,7 @@ function App() {
   };
 
   const handlePostLoginRedirect = () => {
-    setCurrentStep(slides.length + 6); // Move to BookingPage after PostLoginPage
+    setCurrentStep(slides.length + 7); // Move to BookingPage2 after PostLoginPage
   };
 
   const handleBookingBack = () => {
@@ -94,6 +95,10 @@ function App() {
 
   if (currentStep === 0) {
     return <SplashScreen onNext={handleNext} />;
+  }
+
+  if (currentStep === slides.length + 7) {
+    return <BookingPage2 />;
   }
 
   if (currentStep > slides.length + 6) {

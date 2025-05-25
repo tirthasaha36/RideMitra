@@ -1,23 +1,28 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Node modules
+/node_modules/
 
-# testing
-/coverage
+# Package lock files
+package-lock.json
+yarn.lock
 
-# production
-/build
+# Build output
+/build/
+/dist/
 
-# misc
-.DS_Store
+# Coverage directory used by testing tools
+/coverage/
+
+# Environment files
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+*.env
+*.env.*.local
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -33,6 +38,7 @@ yarn-error.log*
 *.sw?
 
 # OS generated files
+.DS_Store
 Thumbs.db
 ehthumbs.db
 Desktop.ini
@@ -44,6 +50,6 @@ Desktop.ini
 # Google API key or config files (if any)
 # Add here if you have any sensitive config files related to Google Maps or other APIs
 
-# Other files to ignore
-*.env
-*.env.*.local
+# Miscellaneous
+.pnp
+.pnp.js

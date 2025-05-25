@@ -213,7 +213,7 @@ const BookingPage = ({ onBack }) => {
   return (
     <>
       <LoadScript
-        googleMapsApiKey="AIzaSyDrHVMgjjtj-roJ3M_2eUVLyeoKFLgv1kk"
+        googleMapsApiKey=""
         libraries={['places']}
         onLoad={handleLoadScript}
       >
