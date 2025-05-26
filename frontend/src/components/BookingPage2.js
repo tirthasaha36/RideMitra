@@ -335,7 +335,7 @@ const BookingPage2 = () => {
 
       {/* Dummy My Location Button */}
       <button
-        style={{ ...styles.myLocationButton, top: window.innerWidth <= 600 ? 530 : 400 }}
+        style={{ ...styles.myLocationButton, top: window.innerWidth <= 600 ? 510 : 400 }}
         onClick={() => {
           // Dummy handler for now
         }}
@@ -357,11 +357,14 @@ const BookingPage2 = () => {
         {rideOptions.map((ride) => (
           <div
             key={ride.id}
-            style={{
+          style={{
               ...styles.rideOption,
               backgroundColor: selectedRideId === ride.id ? '#FFF3CD' : 'transparent',
-              borderRadius: selectedRideId === ride.id ? 5 : 0,
+              borderRadius: selectedRideId === ride.id ? 8 : 0,
               cursor: 'pointer',
+              border: selectedRideId === ride.id ? '1.5px solid #FFC107' : 'none',
+              boxShadow: selectedRideId === ride.id ? '0 1px px rgba(255, 193, 7, 0.5)' : 'none',
+              padding: selectedRideId === ride.id ? '12px 10px' : '10px 0',
             }}
             onClick={() => setSelectedRideId(ride.id)}
           >
@@ -477,18 +480,6 @@ const styles = {
       flexGrow: 1,
     },
   },
-  dropContainer: {
-    position: 'fixed',
-    top: 70,
-    left: 0,
-    right: 0,
-    height: 70,
-    backgroundColor: 'transparent',
-    zIndex: 25,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   '@media (max-width: 600px)': {
     topBarContainer: {
       flexDirection: 'column',
@@ -537,6 +528,7 @@ const styles = {
     justifyContent: 'space-between',
     padding: '10px 0',
     borderBottom: '1px solid #eee',
+    transition: 'border 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease',
   },
   rideOptionLeft: {
     display: 'flex',
@@ -575,7 +567,7 @@ const styles = {
   },
   paymentOptions: {
     display: 'flex',
-    gap: 20,
+    gap: 10,
   },
   paymentOption: {
     display: 'flex',
