@@ -82,6 +82,8 @@ const BookingPage2 = () => {
       collapsed: false, // ensure suggestions dropdown is shown
       zoom: 14, // zoom level when selecting a location
       flyTo: true, // fly to location on selection
+      proximity: mapRef.current ? mapRef.current.getCenter().toArray() : undefined,
+      countries: 'in',
     });
     const pickupGeocoderContainer = document.getElementById('pickup-geocoder');
     if (pickupGeocoderContainer) {
@@ -107,6 +109,8 @@ const BookingPage2 = () => {
       collapsed: false, // ensure suggestions dropdown is shown
       zoom: 14, // zoom level when selecting a location
       flyTo: true, // fly to location on selection
+      proximity: mapRef.current ? mapRef.current.getCenter().toArray() : undefined,
+      countries: 'in',
     });
     const dropGeocoderContainer = document.getElementById('drop-geocoder');
     if (dropGeocoderContainer) {
