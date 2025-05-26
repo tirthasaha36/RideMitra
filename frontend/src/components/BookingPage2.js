@@ -6,16 +6,24 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import SideMenu from './SideMenu';
 
+import BikeImage from '../assets/images/Bike.png';
+import HourlyRentalImage from '../assets/images/HourlyRental.png';
+import SUVImage from '../assets/images/SUV.png';
+import MiniImage from '../assets/images/Mini.png';
+import SedanImage from '../assets/images/Sedan.png';
+import BookAnyImage from '../assets/images/BookAny.png';
+import AutoImage from '../assets/images/Auto.png';
+
 mapboxgl.accessToken = 'pk.eyJ1IjoidGlydGhhMzYiLCJhIjoiY21iM2J2NGwyMDVqeDJscXU2Z2hrZ3J4biJ9.WoXVXz_PN39xA4eqVfl0GQ'; // Replace with your actual Mapbox access token
 
 const rideOptions = [
-  { id: 1, name: 'Book Any', description: 'Mini, Prime Sedan, Prime Plus', eta: '4 min', baseFare: 400, perKmRate: 20, redeem: 11 },
-  { id: 6, name: 'Bike', description: 'Fast and economical bike rides', eta: '2 min', baseFare: 100, perKmRate: 10 },
-  { id: 2, name: 'Auto', description: 'Quickest auto ride in town', eta: '1 min', baseFare: 150, perKmRate: 15 },
-  { id: 5, name: 'Mini', description: 'Comfy, economical cars', eta: '5 min', baseFare: 200, perKmRate: 18 },
-  { id: 3, name: 'Prime Plus', description: 'Ride in utmost comfort', eta: '4 min', baseFare: 250, perKmRate: 22 },
-  { id: 4, name: 'Prime Sedan', description: 'Top sedans', eta: '5 min', baseFare: 230, perKmRate: 20 },
-  { id: 7, name: 'Prime SUV', description: 'Extra large SUVs for groups', eta: '6 min', baseFare: 300, perKmRate: 25 },
+  { id: 1, name: 'Book Any', description: 'Mini, Prime Sedan, Prime Plus', eta: '4 min', baseFare: 400, perKmRate: 20, redeem: 11, image: BookAnyImage },
+  { id: 6, name: 'MotoGo', description: 'Fast and economical bike rides', eta: '2 min', baseFare: 100, perKmRate: 10, image: BikeImage },
+  { id: 2, name: 'TukTuk', description: 'Quickest auto ride in town', eta: '1 min', baseFare: 150, perKmRate: 15, image: AutoImage },
+  { id: 5, name: 'GoLite', description: 'Comfy, economical cars', eta: '5 min', baseFare: 200, perKmRate: 18, image: MiniImage },
+  { id: 3, name: 'Ride+', description: 'Ride in utmost comfort', eta: '4 min', baseFare: 250, perKmRate: 22, image: SedanImage },
+  { id: 4, name: 'SmoothGo', description: 'Top sedans', eta: '5 min', baseFare: 230, perKmRate: 20, image: SedanImage },
+  { id: 7, name: 'MaxCab', description: 'Extra large SUVs for groups', eta: '6 min', baseFare: 300, perKmRate: 25, image: SUVImage },
 ];
 
 const paymentOptions = [
@@ -368,11 +376,14 @@ const BookingPage2 = () => {
             }}
             onClick={() => setSelectedRideId(ride.id)}
           >
-            <div style={styles.rideOptionLeft}>
-              <div style={styles.rideEta}>{ride.eta}</div>
+          <div style={styles.rideOptionLeft}>
+            <img src={ride.image} alt={ride.name} style={styles.rideImage} />
+            <div style={styles.rideTextContainer}>
               <div style={styles.rideName}>{ride.name}</div>
               <div style={styles.rideDescription}>{ride.description}</div>
             </div>
+            <div style={styles.rideEta}>{ride.eta}</div>
+          </div>
             <div style={styles.rideFare}>
               {ride.id === 1
                 ? rideFares[1] || '₹--'
@@ -427,6 +438,11 @@ const styles = {
     flexDirection: 'row', // horizontal layout
     pointerEvents: 'auto',
     width: '100%',
+  },
+  rideImage: {
+    width: 40,
+    height: 40,
+    objectFit: 'contain',
   },
   geocoderContainer: {
     position: 'relative',
@@ -532,11 +548,13 @@ const styles = {
   },
   rideOptionLeft: {
     display: 'flex',
-    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 10,
   },
   rideEta: {
     fontSize: 12,
     color: '#666',
+    marginLeft: 10,
   },
   rideName: {
     fontWeight: 'bold',

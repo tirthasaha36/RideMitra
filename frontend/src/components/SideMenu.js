@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
 const menuItems = [
-  { id: 1, label: 'Electric', icon: '⚡' },
-  { id: 2, label: 'History', icon: '⏰' },
-  { id: 3, label: 'Krutrim', icon: 'क' },
-  { id: 4, label: 'Food History', icon: '🍽️' },
-  { id: 5, label: 'Ola Money', icon: '🅼' },
-  { id: 6, label: 'Payments', icon: '💼', badge: '1 offer available', badgeColor: '#4caf50' },
-  { id: 7, label: 'Insurance', icon: '☂️' },
-  { id: 8, label: 'Gift card', icon: '🎁' },
-  { id: 9, label: 'OlaCoin', icon: '🪙' },
-  { id: 10, label: 'Support', icon: '🛟' },
-  { id: 11, label: 'Ola UPI', icon: '🔲', badge: 'NEW', badgeColor: '#f44336' },
-  { id: 12, label: 'About', icon: 'ℹ️', version: '7.3.2' },
+  { id: 1, label: 'History', icon: '⏰' },
+  { id: 2, label: 'Payments', icon: '💼', badge: '1 offer available', badgeColor: '#4caf50' },
+  { id: 3, label: 'Insurance', icon: '☂️' },
+  { id: 4, label: 'Gift card', icon: '🎁' },
+  { id: 5, label: 'Support', icon: '🛟' },
+  { id: 6, label: 'About', icon: 'ℹ️', version: '1.0.0' },
 ];
 
 const SideMenu = ({ onClose }) => {
