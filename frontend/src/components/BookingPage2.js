@@ -244,18 +244,23 @@ const BookingPage2 = () => {
       }
       setRideFares(fares);
 
-      const directionsRequest = `https://api.mapbox.com/directions/v5/mapbox/driving/${pickup.lng},${pickup.lat};${dropLocation.lng},${dropLocation.lat}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+      const directionsRequest = `https://api.mapbox.com/directions/v5/mapbox/driving/${pickup.lng},${pickup.lat};${dropLocation.lng},${dropLocation.lat}?geometries=geojson&overview=full&steps=true&access_token=${mapboxgl.accessToken}`;
       fetch(directionsRequest)
         .then(res => res.json())
         .then(data => {
           if (data.routes && data.routes.length > 0) {
             const route = data.routes[0].geometry;
+            const routeGeoJSON = {
+              type: 'Feature',
+              properties: {},
+              geometry: route,
+            };
             if (mapRef.current.getSource('route')) {
-              mapRef.current.getSource('route').setData(route);
+              mapRef.current.getSource('route').setData(routeGeoJSON);
             } else {
               mapRef.current.addSource('route', {
                 type: 'geojson',
-                data: route,
+                data: routeGeoJSON,
               });
               mapRef.current.addLayer({
                 id: 'route',
