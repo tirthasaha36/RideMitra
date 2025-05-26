@@ -94,6 +94,9 @@ const BookingPage2 = () => {
       const coords = e.result.center;
       setPickup({ lat: coords[1], lng: coords[0], address: e.result.place_name });
     });
+    pickupGeocoderRef.current.on('error', (e) => {
+      console.error('Pickup geocoder error event:', e);
+    });
 
     // Initialize drop geocoder
     dropGeocoderRef.current = new MapboxGeocoder({
@@ -116,6 +119,9 @@ const BookingPage2 = () => {
       const coords = e.result.center;
       setDropLocation({ lat: coords[1], lng: coords[0], address: e.result.place_name });
     });
+    dropGeocoderRef.current.on('error', (e) => {
+      console.error('Drop geocoder error event:', e);
+    });
 
     // Apply inline styles to geocoder input boxes after they are rendered
     setTimeout(() => {
@@ -129,10 +135,22 @@ const BookingPage2 = () => {
         pickupInput.style.outline = 'none';
         pickupInput.style.border = '1px solid #ddd';
         pickupInput.style.boxSizing = 'border-box';
+        pickupInput.style.position = 'relative';
+        pickupInput.style.zIndex = '1002';
         const pickupParent = pickupInput.closest('.mapboxgl-ctrl-geocoder.mapboxgl-ctrl');
         if (pickupParent) {
           pickupParent.style.borderRadius = '30px';
-          pickupParent.style.overflow = 'hidden';
+          pickupParent.style.overflow = 'visible';
+          pickupParent.style.position = 'relative';
+          pickupParent.style.zIndex = '1000';
+          pickupParent.style.width = '100%'; // Added to expand parent container fully
+          pickupParent.style.maxWidth = 'none'; // Remove max width if any
+        }
+        // Fix cross button pointer events
+        const pickupClearBtn = pickupParent.querySelector('.mapboxgl-ctrl-geocoder--button');
+        if (pickupClearBtn) {
+          pickupClearBtn.style.pointerEvents = 'auto';
+          pickupClearBtn.style.zIndex = '1003';
         }
       }
       const dropInput = document.querySelector('#drop-geocoder input.mapboxgl-ctrl-geocoder--input');
@@ -145,10 +163,22 @@ const BookingPage2 = () => {
         dropInput.style.outline = 'none';
         dropInput.style.border = '1px solid #ddd';
         dropInput.style.boxSizing = 'border-box';
+        dropInput.style.position = 'relative';
+        dropInput.style.zIndex = '1001';
         const dropParent = dropInput.closest('.mapboxgl-ctrl-geocoder.mapboxgl-ctrl');
         if (dropParent) {
           dropParent.style.borderRadius = '30px';
-          dropParent.style.overflow = 'hidden';
+          dropParent.style.overflow = 'visible';
+          dropParent.style.position = 'relative';
+          dropParent.style.zIndex = '1000';
+          dropParent.style.width = '100%'; // Added to expand parent container fully
+          dropParent.style.maxWidth = 'none'; // Remove max width if any
+        }
+        // Fix cross button pointer events
+        const dropClearBtn = dropParent.querySelector('.mapboxgl-ctrl-geocoder--button');
+        if (dropClearBtn) {
+          dropClearBtn.style.pointerEvents = 'auto';
+          dropClearBtn.style.zIndex = '1003';
         }
       }
     }, 100);
@@ -288,11 +318,29 @@ const BookingPage2 = () => {
             </button>
           </div>
           <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', zIndex: 1000 }}>
-            <div id="pickup-geocoder" className="geocoderContainer" style={{ width: '100%' }}></div>
-          <div id="drop-geocoder" className="geocoderContainer dropGeocoderSeparate" style={{ marginTop: 6, width: '100%' }}></div>
+            <div id="pickup-geocoder" className="geocoderContainer" style={{ width: '100%', position: 'relative', zIndex: 1100 }}></div>
+          <div id="drop-geocoder" className="geocoderContainer dropGeocoderSeparate" style={{ marginTop: 6, width: '100%', position: 'relative', zIndex: 1000 }}></div>
           </div>
         </div>
       </div>
+
+      {/* Dummy My Location Button */}
+      <button
+        style={{ ...styles.myLocationButton, top: window.innerWidth <= 600 ? 530 : 400 }}
+        onClick={() => {
+          // Dummy handler for now
+        }}
+        aria-label="Use my current location"
+        title="Use my current location"
+      >
+        <img
+          src="https://img.icons8.com/?size=100&id=60991&format=png&color=000000"
+          alt="My Location"
+          width={24}
+          height={24}
+          style={{ display: 'block', margin: 'auto' }}
+        />
+      </button>
 
       {/* Removed separate dropContainer div */}
 
@@ -366,6 +414,7 @@ const styles = {
     zIndex: 30,
     flexDirection: 'row', // horizontal layout
     pointerEvents: 'auto',
+    width: '100%',
   },
   geocoderContainer: {
     position: 'relative',
@@ -396,6 +445,28 @@ const styles = {
     borderRadius: 30,
     marginLeft: 10,
     marginRight: 10,
+  },
+  '@media (min-width: 801px)': {
+    geocoderContainer: {
+      width: '100%',
+      marginTop: 0,
+      marginBottom: 0,
+      paddingTop: 10,
+      paddingBottom: 10,
+      maxWidth: 'none', // remove max width to allow full expansion
+      boxSizing: 'border-box',
+      flexGrow: 1,
+    },
+    dropGeocoderSeparate: {
+      width: '100%',
+      marginTop: 0,
+      marginBottom: 0,
+      paddingTop: 10,
+      paddingBottom: 10,
+      maxWidth: 'none', // remove max width to allow full expansion
+      boxSizing: 'border-box',
+      flexGrow: 1,
+    },
   },
   dropContainer: {
     position: 'fixed',
@@ -433,9 +504,9 @@ const styles = {
     top: 0,
     left: 0,
     right: 0,
-    bottom: 70,
+    bottom: '30vh', // changed to leave 30% space at bottom
     zIndex: 5, 
-    height: 'calc(100vh - 70px)',
+    height: '70vh', // changed to 70% of viewport height
   },
   rideOptionsContainer: {
     position: 'fixed',
@@ -532,6 +603,29 @@ const styles = {
     background: 'none',
     border: 'none',
   },
+  myLocationButton: {
+    position: 'fixed',
+    top: '61%',
+    right: 20,
+    transform: 'translateY(-50%)',
+    zIndex: 40,
+    backgroundColor: 'white',
+    border: 'none',
+    width: 48,
+    height: 48,
+    padding: 0,
+    borderRadius: '50%',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+'@media (min-width: 801px)': {
+  myLocationButton: {
+    top: '55%',
+  },
+},
 };
 
 export default BookingPage2;
