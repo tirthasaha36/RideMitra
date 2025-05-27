@@ -377,12 +377,14 @@ const BookingPage2 = () => {
             onClick={() => setSelectedRideId(ride.id)}
           >
           <div style={styles.rideOptionLeft}>
-            <img src={ride.image} alt={ride.name} style={styles.rideImage} />
+            <div style={styles.rideImageContainer}>
+              <img src={ride.image} alt={ride.name} style={styles.rideImage} />
+              <div style={styles.rideEta}>{ride.eta}</div>
+            </div>
             <div style={styles.rideTextContainer}>
               <div style={styles.rideName}>{ride.name}</div>
               <div style={styles.rideDescription}>{ride.description}</div>
             </div>
-            <div style={styles.rideEta}>{ride.eta}</div>
           </div>
             <div style={styles.rideFare}>
               {ride.id === 1
@@ -554,7 +556,10 @@ const styles = {
   rideEta: {
     fontSize: 12,
     color: '#666',
-    marginLeft: 10,
+    marginLeft: 0,
+    marginTop: 1,
+    alignSelf: 'flex-start',
+    paddingLeft: 6,
   },
   rideName: {
     fontWeight: 'bold',
@@ -645,6 +650,12 @@ const styles = {
     top: '55%',
   },
 },
+  rideImageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 4,
+  },
 };
 
 export default BookingPage2;
