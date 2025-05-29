@@ -92,6 +92,7 @@ const BookingPage2 = () => {
       flyTo: true, // fly to location on selection
       proximity: mapRef.current ? mapRef.current.getCenter().toArray() : undefined,
       countries: 'in',
+      autocomplete: true, // enable autocomplete explicitly
     });
     const pickupGeocoderContainer = document.getElementById('pickup-geocoder');
     if (pickupGeocoderContainer) {
@@ -119,6 +120,7 @@ const BookingPage2 = () => {
       flyTo: true, // fly to location on selection
       proximity: mapRef.current ? mapRef.current.getCenter().toArray() : undefined,
       countries: 'in',
+      autocomplete: true, // enable autocomplete explicitly
     });
     const dropGeocoderContainer = document.getElementById('drop-geocoder');
     if (dropGeocoderContainer) {
