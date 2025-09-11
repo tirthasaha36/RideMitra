@@ -5,4 +5,4 @@
 - [x] Fix undefined styles.mapContainer reference to use mapContainer (was already correct)
 - [x] Add error handling for LoadScript loading failure
 - [x] Add debug logging for script loading states (added loading text)
-- [ ] Test the component after fixes
+- [x] Test the component after fixes
