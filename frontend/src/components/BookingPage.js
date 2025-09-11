@@ -4,7 +4,7 @@ import SideMenu from './SideMenu';
 
 const containerStyle = {
   width: '100vw',
-  height: 'calc(100vh - 80px)',  // Adjust height to fill below top bar container (approx 80px height)
+  height: 'calc(75vh - 80px)',
   position: 'relative',
   zIndex: 1,
 };
@@ -220,69 +220,75 @@ const BookingPage = ({ onBack }) => {
         {scriptLoaded && (
           <>
             <div style={styles.topBarContainer}>
-              <button style={styles.menuButton} aria-label="Menu" onClick={() => setShowSideMenu(true)}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="35"
-                  height="25"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              </button>
-              <div style={styles.pickupInputContainer}>
-                <Autocomplete onLoad={onLoadPickup} onPlaceChanged={onPlaceChangedPickup}>
-                  <input
-                    type="text"
-                    placeholder="Enter pickup location"
-                    style={styles.pickupInputWithClear}
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                  />
-                </Autocomplete>
-                {inputValue && (
-                  <button
-                    style={{ ...styles.clearButton, right: 10 }}
-                    onClick={() => {
-                      setInputValue('');
-                      setPickup(null);
-                    }}
-                    aria-label="Clear pickup location"
-                  >
-                    &times;
+              <div style={styles.menuAndInputsContainer}>
+                <div style={styles.menuButtonContainer}>
+                  <button style={styles.menuButton} aria-label="Menu" onClick={() => setShowSideMenu(true)}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="35"
+                      height="25"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
                   </button>
-                )}
-              </div>
-              <div style={{ ...styles.pickupContainer, marginTop: 20 }}>
-                <Autocomplete onLoad={onLoadDrop} onPlaceChanged={onPlaceChangedDrop}>
-                  <input
-                    type="text"
-                    placeholder="Enter drop location"
-                    style={styles.pickupInputWithClear}
-                    value={dropInputValue}
-                    onChange={(e) => setDropInputValue(e.target.value)}
-                  />
-                </Autocomplete>
-                {dropInputValue && (
-                  <button
-                    style={{ ...styles.clearButton, right: 20 }}
-                    onClick={() => {
-                      setDropInputValue('');
-                      setDropLocation(null);
-                    }}
-                    aria-label="Clear drop location"
-                  >
-                    &times;
-                  </button>
-                )}
+                </div>
+                <div style={styles.inputsColumn}>
+                  <div style={styles.pickupInputContainer}>
+                    <Autocomplete onLoad={onLoadPickup} onPlaceChanged={onPlaceChangedPickup}>
+                      <input
+                        type="text"
+                        placeholder="Enter pickup location"
+                        style={styles.pickupInputWithClear}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                      />
+                    </Autocomplete>
+                    {inputValue && (
+                      <button
+                        style={{ ...styles.clearButton, right: 10 }}
+                        onClick={() => {
+                          setInputValue('');
+                          setPickup(null);
+                        }}
+                        aria-label="Clear pickup location"
+                      >
+                        &times;
+                      </button>
+                    )}
+                  </div>
+                  <div style={styles.dropInputContainer}>
+                    <Autocomplete onLoad={onLoadDrop} onPlaceChanged={onPlaceChangedDrop}>
+                      <input
+                        type="text"
+                        placeholder="Enter drop location"
+                        style={styles.pickupInputWithClear}
+                        value={dropInputValue}
+                        onChange={(e) => setDropInputValue(e.target.value)}
+                      />
+                    </Autocomplete>
+                    {dropInputValue && (
+                      <button
+                        style={{ ...styles.clearButton, right: 20 }}
+                        onClick={() => {
+                          setDropInputValue('');
+                          setDropLocation(null);
+                        }}
+                        aria-label="Clear drop location"
+                      >
+                        &times;
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -421,11 +427,14 @@ const styles = {
   },
   topBarContainer: {
     position: 'fixed',
-    top: 10,
-    left: 15,
-    right: 15,
+    top: 0,
+    left: 0,
+    right: 0,
     backgroundColor: 'white',
-    borderRadius: 30,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
     padding: 10,
     boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
     display: 'flex',
@@ -433,10 +442,36 @@ const styles = {
     gap: 10,
     zIndex: 25,
   },
+  menuAndInputsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    width: '100%',
+  },
   pickupInputContainer: {
     flex: 1,
     position: 'relative',
     borderRadius: 30,
+  },
+  inputsColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+    flex: 1,
+  },
+  locationBox: {
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 10,
+    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+    width: '100%',
+  },
+  dropInputContainer: {
+    position: 'relative',
   },
   backButton: {
     fontSize: 24,
