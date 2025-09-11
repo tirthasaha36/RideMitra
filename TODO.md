@@ -1,17 +1,8 @@
-# Booking Page Map Layout Modification
+# Fix BookingPage Loading Issue
 
-## Steps to Complete:
-1. [ ] Modify containerStyle height to only extend to cab list area
-2. [ ] Update mapContainer positioning
-3. [ ] Adjust rideOptionsContainer positioning to start after map
-4. [ ] Update myLocationButton positioning
-5. [ ] Test responsive behavior
-
-## Current State:
-- Map takes full screen height (calc(100vh - 80px))
-- Ride options start at 60vh as overlay
-
-## Target State:
-- Map should only extend to where cab list begins
-- Ride options should start immediately after map
-- Layout should work responsively
+## Tasks
+- [x] Remove duplicate useEffect hooks for pickup and resize
+- [x] Fix undefined styles.mapContainer reference to use mapContainer (was already correct)
+- [x] Add error handling for LoadScript loading failure
+- [x] Add debug logging for script loading states (added loading text)
+- [ ] Test the component after fixes

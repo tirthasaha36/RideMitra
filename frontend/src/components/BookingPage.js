@@ -131,23 +131,6 @@ const BookingPage = ({ onBack }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    if (pickup) {
-      setDistance(null);
-      setDirections(null);
-      setInputValue(pickup.address);
-      setMapCenter({ lat: pickup.lat, lng: pickup.lng });
-    }
-  }, [pickup]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 600);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   const onLoadPickup = (autocomplete) => {
     pickupRef.current = autocomplete;
   };
@@ -216,7 +199,16 @@ const BookingPage = ({ onBack }) => {
         googleMapsApiKey="AIzaSyBvkbX4qVAXMggFpc8WejigdJEXJO1lGFs"
         libraries={['places']}
         onLoad={handleLoadScript}
+        onError={(e) => {
+          console.error('Google Maps script failed to load:', e);
+          alert('Failed to load Google Maps. Please refresh the page.');
+        }}
       >
+        {!scriptLoaded && (
+          <div style={{ position: 'fixed', top: 10, left: 10, zIndex: 1000, backgroundColor: 'white', padding: 5, borderRadius: 5, boxShadow: '0 0 5px rgba(0,0,0,0.3)' }}>
+            Loading Google Maps...
+          </div>
+        )}
         {scriptLoaded && (
           <>
             <div style={styles.topBarContainer}>
@@ -292,7 +284,7 @@ const BookingPage = ({ onBack }) => {
               </div>
             </div>
 
-            <div style={styles.mapContainer}>
+            <div style={mapContainer}>
               <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={mapCenter}
@@ -520,17 +512,6 @@ const styles = {
     borderRadius: 30,
     border: '1px solid #ccc',
     fontFamily: 'Arial, sans-serif',
-  },
-  pickupContainer: {
-    position: 'fixed',
-    top: 60,
-    left: 15,
-    right: 15,
-    backgroundColor: 'white',
-    borderRadius: 30,
-    padding: 10,
-    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-    zIndex: 15,
   },
   inputWrapper: {
     position: 'relative',
