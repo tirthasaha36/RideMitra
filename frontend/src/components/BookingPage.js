@@ -298,12 +298,7 @@ const BookingPage = ({ onBack }) => {
                 center={mapCenter}
                 zoom={12}
                 options={{
-                  mapTypeControl: false,
-                  streetViewControl: false,
-                  fullscreenControl: false,
-                  zoomControl: true,
-                  keyboardShortcuts: true,
-                  disableDefaultUI: false,
+                  disableDefaultUI: true,
                   draggable: true,
                 }}
                 onLoad={onLoadMap}
@@ -430,7 +425,8 @@ const styles = {
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backdropFilter: 'blur(10px)',
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     borderBottomLeftRadius: 30,
